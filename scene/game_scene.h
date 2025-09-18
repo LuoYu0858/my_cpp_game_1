@@ -2,10 +2,13 @@
 #define PLANTSVSPLANTS_GAME_SCENE_H
 
 #include "scene.h"
+#include "scene_manager.h"
+#include "global_variable.h"
 
 #include <iostream>
 
-class GameScene final : public IScene {
+// 游戏场景类
+class GameScene : public IScene {
 public:
     GameScene() = default;
     ~GameScene() override = default;
@@ -23,6 +26,7 @@ public:
     }
 
     void on_input(const ExMessage& msg) override {
+        if (msg.message == WM_KEYDOWN) scene_manager.switch_to(SceneManager::SceneType::Menu);
     }
 
     void on_exit() override {

@@ -3,6 +3,7 @@
 
 #include <graphics.h>
 
+// 场景接口
 class IScene {
 public:
     IScene() = default;
