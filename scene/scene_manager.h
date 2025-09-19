@@ -49,8 +49,8 @@ public:
     }
 
     // 执行对应场景的绘图操作
-    void on_draw() {
-        current_scene->on_draw();
+    void on_draw(const Camera& camera) {
+        current_scene->on_draw(camera);
     }
 
     // 执行对应场景的处理输入操作

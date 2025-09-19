@@ -14,6 +14,8 @@ IScene* menu_scene = nullptr;
 IScene* game_scene = nullptr;
 IScene* selector_scene = nullptr;
 
+Camera main_camera;
+
 SceneManager scene_manager;
 
 IMAGE img_menu_background;                      // 主菜单背景图片
@@ -203,7 +205,7 @@ int main() {
 
         cleardevice();
 
-        scene_manager.on_draw();
+        scene_manager.on_draw(main_camera);
 
         FlushBatchDraw();
 

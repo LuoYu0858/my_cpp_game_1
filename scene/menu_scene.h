@@ -9,43 +9,36 @@
 #include "scene_manager.h"
 #include "global_variable.h"
 
-#include <iostream>
-
 // 菜单场景类
 class MenuScene : public IScene {
 public:
     MenuScene() = default;
     ~MenuScene() override = default;
 
+    // 菜单场景进入
     void on_enter() override {
-        animation_peashooter_run_right.set_atlas(&atlas_peashooter_run_right);
-        animation_peashooter_run_right.set_interval(105);
-        animation_peashooter_run_right.set_loop(true);
-
-        timer.set_wait_time(1000);
-        timer.set_one_shot(false);
-        timer.set_callback([]() {
-            std::cout << "Shot!" << std::endl;
-        });
+        mciSendString(_T("play bgm_menu repeat from 0"), nullptr, 0, nullptr);
     }
 
+    // 菜单场景帧更新
     void on_update(int delta) override {
-        timer.on_update(delta);
-        camera.on_update(delta);
-        animation_peashooter_run_right.on_update(delta);
     }
 
-    void on_draw() override {
-        const Vector2& pos_camera = camera.get_position();
-        animation_peashooter_run_right.on_draw((int)(100 - pos_camera.x), (int)(100 - pos_camera.y));
+    // 菜单场景渲染
+    void on_draw(const Camera& camera) override {
+        putimage(0, 0, &img_menu_background);
     }
 
+    // 处理菜单场景输入
     void on_input(const ExMessage& msg) override {
-        if (msg.message == WM_KEYDOWN) camera.shake(5, 350);
+        if (msg.message == WM_KEYUP) {
+            mciSendString(_T("play ui_confirm from 0"), nullptr, 0, nullptr);
+            scene_manager.switch_to(SceneManager::SceneType::Selector);
+        }
     }
 
+    // 菜单场景退出
     void on_exit() override {
-        std::cout << "主菜单退出" << std::endl;
     }
 
 private:
