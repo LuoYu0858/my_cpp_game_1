@@ -3,6 +3,7 @@
 
 #include "scene.h"
 #include "atlas.h"
+#include "camera.h"
 #include "animation.h"
 #include "scene_manager.h"
 #include "global_variable.h"
@@ -17,19 +18,18 @@ public:
 
     void on_enter() override {
         animation_peashooter_run_right.set_atlas(&atlas_peashooter_run_right);
-        animation_peashooter_run_right.set_interval(300);
-        animation_peashooter_run_right.set_loop(false);
-        animation_peashooter_run_right.set_callback([]() {
-           scene_manager.switch_to(SceneManager::SceneType::Game);
-        });
+        animation_peashooter_run_right.set_interval(105);
+        animation_peashooter_run_right.set_loop(true);
     }
 
     void on_update(int delta) override {
+        camera.on_update(delta);
         animation_peashooter_run_right.on_update(delta);
     }
 
     void on_draw() override {
-        animation_peashooter_run_right.on_draw(100, 100);
+        const Vector2& pos_camera = camera.get_position();
+        animation_peashooter_run_right.on_draw((int)(100 - pos_camera.x), (int)(100 - pos_camera.y));
     }
 
     void on_input(const ExMessage& msg) override {
@@ -41,6 +41,7 @@ public:
     }
 
 private:
+    Camera camera;
     Animation animation_peashooter_run_right;
 };
 
