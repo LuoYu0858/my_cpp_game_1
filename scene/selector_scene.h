@@ -14,7 +14,7 @@ public:
     void on_enter() override {
 
     }
-    void on_update() override {
+    void on_update(int delta) override {
 
     }
     void on_draw() override {

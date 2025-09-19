@@ -20,7 +20,6 @@ if(MSVC)
             IMPORTED_LOCATION "${EASYX_LIB}"
     )
 
-
 else()
     message(FATAL_ERROR "This project requires MSVC compiler")
 endif()

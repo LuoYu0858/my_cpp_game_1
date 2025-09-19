@@ -2,6 +2,8 @@
 #define PLANTSVSPLANTS_MENU_SCENE_H
 
 #include "scene.h"
+#include "atlas.h"
+#include "animation.h"
 #include "scene_manager.h"
 #include "global_variable.h"
 
@@ -14,15 +16,20 @@ public:
     ~MenuScene() override = default;
 
     void on_enter() override {
-        std::cout << "进入主菜单" << std::endl;
+        animation_peashooter_run_right.set_atlas(&atlas_peashooter_run_right);
+        animation_peashooter_run_right.set_interval(300);
+        animation_peashooter_run_right.set_loop(false);
+        animation_peashooter_run_right.set_callback([]() {
+           scene_manager.switch_to(SceneManager::SceneType::Game);
+        });
     }
 
-    void on_update() override {
-        std::cout << "主菜单正在运行" << std::endl;
+    void on_update(int delta) override {
+        animation_peashooter_run_right.on_update(delta);
     }
 
     void on_draw() override {
-        outtextxy(10, 10, _T("主菜单绘图内容"));
+        animation_peashooter_run_right.on_draw(100, 100);
     }
 
     void on_input(const ExMessage& msg) override {
@@ -34,6 +41,7 @@ public:
     }
 
 private:
+    Animation animation_peashooter_run_right;
 };
 
 #endif //PLANTSVSPLANTS_MENU_SCENE_H

@@ -17,7 +17,7 @@ public:
         std::cout << "进入游戏局内场景" << std::endl;
     }
 
-    void on_update() override {
+    void on_update(int delta) override {
         std::cout << "游戏正在运行..." << std::endl;
     }
 

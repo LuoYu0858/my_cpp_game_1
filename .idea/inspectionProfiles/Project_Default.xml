@@ -6,6 +6,7 @@
     <inspection_tool class="CppLocalVariableMayBeConst" enabled="false" level="HINT" enabled_by_default="false" />
     <inspection_tool class="CppMemberFunctionMayBeConst" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
     <inspection_tool class="CppParameterMayBeConst" enabled="false" level="HINT" enabled_by_default="false" />
+    <inspection_tool class="CppPassValueParameterByConstReference" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
     <inspection_tool class="CppTooWideScopeInitStatement" enabled="false" level="HINT" enabled_by_default="false" />
     <inspection_tool class="CppVariableCanBeMadeConstexpr" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
   </profile>
