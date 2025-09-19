@@ -1,6 +1,7 @@
 ﻿#ifndef PLANTSVSPLANTS_MENU_SCENE_H
 #define PLANTSVSPLANTS_MENU_SCENE_H
 
+#include "timer.h"
 #include "scene.h"
 #include "atlas.h"
 #include "camera.h"
@@ -20,9 +21,16 @@ public:
         animation_peashooter_run_right.set_atlas(&atlas_peashooter_run_right);
         animation_peashooter_run_right.set_interval(105);
         animation_peashooter_run_right.set_loop(true);
+
+        timer.set_wait_time(1000);
+        timer.set_one_shot(false);
+        timer.set_callback([]() {
+            std::cout << "Shot!" << std::endl;
+        });
     }
 
     void on_update(int delta) override {
+        timer.on_update(delta);
         camera.on_update(delta);
         animation_peashooter_run_right.on_update(delta);
     }
@@ -33,7 +41,7 @@ public:
     }
 
     void on_input(const ExMessage& msg) override {
-        if (msg.message == WM_KEYDOWN) scene_manager.switch_to(SceneManager::SceneType::Game);
+        if (msg.message == WM_KEYDOWN) camera.shake(5, 350);
     }
 
     void on_exit() override {
@@ -41,6 +49,7 @@ public:
     }
 
 private:
+    Timer timer;
     Camera camera;
     Animation animation_peashooter_run_right;
 };
