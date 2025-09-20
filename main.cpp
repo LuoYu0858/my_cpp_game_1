@@ -181,6 +181,9 @@ int main() {
 
     load_game_resources();
 
+    settextstyle(28, 0, _T("黑体"));
+    setbkmode(TRANSPARENT);
+
     BeginBatchDraw();
 
     menu_scene = new MenuScene();

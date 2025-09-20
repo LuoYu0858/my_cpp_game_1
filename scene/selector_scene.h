@@ -2,11 +2,10 @@
 #define PLANTSVSPLANTS_SELECTOR_SCENE_H
 
 #include "scene.h"
-#include "scene_manager.h"
 #include "global_variable.h"
 
 // 选择场景类
-class SelectorScene : public IScene{
+class SelectorScene : public IScene {
 public:
     SelectorScene() = default;
     ~SelectorScene() override = default;
@@ -38,13 +37,13 @@ public:
         pos_animation_1P.x = (getwidth() / 2 - atlas_peashooter_idle_right.get_image(0)->getwidth()) / 2 - OFFSET_X;
         pos_animation_1P.y = pos_img_1P_gravestone.y + 80;
         pos_animation_2P.x =
-                getwidth() / 2 + (getwidth() / 2 - atlas_peashooter_idle_right.get_image(0)->getwidth()) / 2 + OFFSET_X;
+            getwidth() / 2 + (getwidth() / 2 - atlas_peashooter_idle_right.get_image(0)->getwidth()) / 2 + OFFSET_X;
         pos_animation_2P.y = pos_animation_1P.y;
         pos_img_1P_name.y = pos_animation_1P.y + 155;
         pos_img_2P_name.y = pos_img_1P_name.y;
         pos_1P_selector_btn_left.x = pos_img_1P_gravestone.x - img_1P_selector_btn_idle_left.getwidth();
         pos_1P_selector_btn_left.y = pos_img_1P_gravestone.y +
-                                     (img_gravestone_right.getheight() - img_1P_selector_btn_idle_left.getheight()) / 2;
+            (img_gravestone_right.getheight() - img_1P_selector_btn_idle_left.getheight()) / 2;
         pos_1P_selector_btn_right.x = pos_img_1P_gravestone.x + img_gravestone_right.getwidth();
         pos_1P_selector_btn_right.y = pos_1P_selector_btn_left.y;
         pos_2P_selector_btn_left.x = pos_img_2P_gravestone.x - img_2P_selector_btn_idle_left.getwidth();
@@ -52,9 +51,12 @@ public:
         pos_2P_selector_btn_right.x = pos_img_2P_gravestone.x + img_gravestone_left.getwidth();
         pos_2P_selector_btn_right.y = pos_1P_selector_btn_left.y;
     }
-    void on_update(int delta) override {
 
+    void on_update(int delta) override {
+        animation_peashooter.on_update(delta);
+        animation_sunflower.on_update(delta);
     }
+
     void on_draw(const Camera& camera) override {
         putimage(0, 0, &img_selector_background);
 
@@ -65,17 +67,65 @@ public:
         putimage_alpha(pos_img_1P_gravestone.x, pos_img_1P_gravestone.y, &img_gravestone_right);
         putimage_alpha(pos_img_2P_gravestone.x, pos_img_2P_gravestone.y, &img_gravestone_left);
 
+        // 根绝玩家角色类型渲染不同角色的动画
+        switch (player_type_1) {
+        case PlayerType::Peashooter:
+            animation_peashooter.on_draw(camera, pos_animation_1P.x, pos_animation_1P.y);
+            pos_img_1P_name.x = pos_img_1P_gravestone.x + (img_gravestone_right.getwidth() -
+                textwidth(str_peashooter_name)) / 2;
+            outtextxy_shaded(pos_img_1P_name.x, pos_img_1P_name.y, str_peashooter_name);
+            break;
+        case PlayerType::Sunflower:
+            animation_sunflower.on_draw(camera, pos_animation_1P.x, pos_animation_1P.y);
+            pos_img_1P_name.x = pos_img_1P_gravestone.x + (img_gravestone_right.getwidth() -
+                textwidth(str_sunflower_name)) / 2;
+            outtextxy_shaded(pos_img_1P_name.x, pos_img_1P_name.y, str_sunflower_name);
+            break;
+        default: break;
+        }
+
+        switch (player_type_2) {
+        case PlayerType::Peashooter:
+            animation_peashooter.on_draw(camera, pos_animation_2P.x, pos_animation_2P.y);
+            pos_img_2P_name.x = pos_img_2P_gravestone.x + (img_gravestone_right.getwidth() -
+                textwidth(str_peashooter_name)) / 2;
+            outtextxy_shaded(pos_img_2P_name.x, pos_img_2P_name.y, str_peashooter_name);
+            break;
+        case PlayerType::Sunflower:
+            animation_sunflower.on_draw(camera, pos_animation_2P.x, pos_animation_2P.y);
+            pos_img_2P_name.x = pos_img_2P_gravestone.x + (img_gravestone_right.getwidth() -
+                textwidth(str_sunflower_name)) / 2;
+            outtextxy_shaded(pos_img_2P_name.x, pos_img_2P_name.y, str_sunflower_name);
+            break;
+        default: break;
+        }
+
         putimage_alpha(pos_img_1P_desc.x, pos_img_1P_desc.y, &img_1P_desc);
         putimage_alpha(pos_img_2P_desc.x, pos_img_2P_desc.y, &img_2P_desc);
 
         putimage_alpha(pos_img_tip.x, pos_img_tip.y, &img_selector_tip);
     }
+
     void on_input(const ExMessage& msg) override {
-
     }
+
     void on_exit() override {
-
     }
+
+private:
+    static void outtextxy_shaded(int x, int y, LPCTSTR str) {
+        settextcolor(RGB(45, 45, 45));
+        outtextxy(x + 2, y + 2, str);
+        settextcolor(RGB(255, 255, 255));
+        outtextxy(x, y, str);
+    }
+
+private:
+    enum class PlayerType {
+        Peashooter = 0,
+        Sunflower,
+        Invalid
+    };
 
 private:
     POINT pos_img_VS = {0};                 // VS 艺术字图片位置
@@ -98,8 +148,8 @@ private:
     Animation animation_peashooter;         // 豌豆射手动画
     Animation animation_sunflower;          // 向日葵动画
 
-    // PlayerType player_type_1 = PlayerType::Peashooter;  // 1P 角色类型
-    // PlayerType player_type_2 = PlayerType::Sunflower;   // 2P 角色类型
+    PlayerType player_type_1 = PlayerType::Peashooter;  // 1P 角色类型
+    PlayerType player_type_2 = PlayerType::Sunflower;   // 2P 角色类型
 
     LPCTSTR str_peashooter_name = _T("豌豆射手");   // 豌豆射手角色名
     LPCTSTR str_sunflower_name = _T("向日葵");     // 向日葵角色名

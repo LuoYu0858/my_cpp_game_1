@@ -3,6 +3,7 @@
 
 #include "util.h"
 #include "atlas.h"
+#include "camera.h"
 
 #include <graphics.h>
 #include <functional>
@@ -79,8 +80,8 @@ public:
     }
 
     // 绘图
-    void on_draw(int x, int y) const {
-        putimage_alpha(x, y, atlas->get_image(idx_frame));
+    void on_draw(const Camera& camera, int x, int y) const {
+        putimage_alpha(camera, x, y, atlas->get_image(idx_frame));
     }
 
 private:
