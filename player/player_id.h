@@ -1,0 +1,8 @@
+﻿#ifndef PLANTSVSPLANTS_PLAYER_ID_H
+#define PLANTSVSPLANTS_PLAYER_ID_H
+
+enum class PlayerID {
+    P1, P2
+};
+
+#endif //PLANTSVSPLANTS_PLAYER_ID_H

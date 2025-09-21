@@ -3,6 +3,7 @@
 
 #include "util.h"
 #include "scene.h"
+#include "player.h"
 #include "platform.h"
 #include "global_variable.h"
 
@@ -15,6 +16,9 @@ public:
     ~GameScene() override = default;
 
     void on_enter() override {
+        player_1->set_position(200, 50);
+        player_2->set_position(975, 50);
+
         pos_img_sky.x = (getwidth() - img_sky.getwidth()) / 2;
         pos_img_sky.y = (getheight() - img_sky.getheight()) / 2;
 
@@ -62,6 +66,8 @@ public:
     }
 
     void on_update(int delta) override {
+        player_1->on_update(delta);
+        player_2->on_update(delta);
     }
 
     void on_draw(const Camera& camera) override {
@@ -74,9 +80,15 @@ public:
             settextcolor(RGB(255, 0, 0));
             outtextxy(15, 15, _T("已开启调试模式, 按'Q'键关闭"));
         }
+
+        player_1->on_draw(camera);
+        player_2->on_draw(camera);
     }
 
     void on_input(const ExMessage& msg) override {
+        player_1->on_input(msg);
+        player_2->on_input(msg);
+
         switch (msg.message) {
         case WM_KEYUP:
             if (msg.vkcode == 0x51) is_debug = not is_debug;

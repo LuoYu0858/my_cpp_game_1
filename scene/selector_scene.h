@@ -2,7 +2,11 @@
 #define PLANTSVSPLANTS_SELECTOR_SCENE_H
 
 #include "scene.h"
+#include "animation.h"
+#include "player_id.h"
 #include "global_variable.h"
+#include "sunflower_player.h"
+#include "peashooter_player.h"
 
 // 选择场景类
 class SelectorScene : public IScene {
@@ -213,6 +217,27 @@ public:
     }
 
     void on_exit() override {
+        switch (player_type_1) {
+        case PlayerType::Peashooter:
+            player_1 = new PeashooterPlayer();
+            break;
+        case PlayerType::Sunflower:
+            player_1 = new SunflowerPlayer();
+            break;
+        default: break;
+        }
+        player_1->set_id(PlayerID::P1);
+
+        switch (player_type_2) {
+        case PlayerType::Peashooter:
+            player_2 = new PeashooterPlayer();
+            break;
+        case PlayerType::Sunflower:
+            player_2 = new SunflowerPlayer();
+            break;
+        default: break;
+        }
+        player_2->set_id(PlayerID::P2);
     }
 
 private:

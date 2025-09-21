@@ -29,6 +29,7 @@ add_executable(PlantsVsPlants main.cpp)
 
 target_include_directories(PlantsVsPlants PRIVATE
         ${PROJECT_SOURCE_DIR}/scene
+        ${PROJECT_SOURCE_DIR}/player
         ${PROJECT_SOURCE_DIR}
 )
 
