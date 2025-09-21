@@ -3,6 +3,7 @@
 
 class Atlas;
 class IScene;
+class Camera;
 class SceneManager;
 
 extern IScene* menu_scene;
@@ -10,6 +11,8 @@ extern IScene* game_scene;
 extern IScene* selector_scene;
 
 extern SceneManager scene_manager;
+
+extern Camera main_camera;
 
 extern IMAGE img_menu_background;                      // 主菜单背景图片
 
