@@ -1,6 +1,7 @@
 ﻿#include "util.h"
 #include "atlas.h"
 #include "scene.h"
+#include "platform.h"
 #include "menu_scene.h"
 #include "game_scene.h"
 #include "scene_manager.h"
@@ -10,6 +11,8 @@
 
 #pragma comment(lib, "Winmm.lib")
 
+bool is_debug = false;
+
 IScene* menu_scene = nullptr;
 IScene* game_scene = nullptr;
 IScene* selector_scene = nullptr;
@@ -17,6 +20,8 @@ IScene* selector_scene = nullptr;
 Camera main_camera;
 
 SceneManager scene_manager;
+
+std::vector<Platform> platform_list;
 
 IMAGE img_menu_background;                      // 主菜单背景图片
 

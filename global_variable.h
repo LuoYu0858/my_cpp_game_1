@@ -4,7 +4,10 @@
 class Atlas;
 class IScene;
 class Camera;
+class Platform;
 class SceneManager;
+
+extern bool is_debug;
 
 extern IScene* menu_scene;
 extern IScene* game_scene;
@@ -13,6 +16,8 @@ extern IScene* selector_scene;
 extern SceneManager scene_manager;
 
 extern Camera main_camera;
+
+extern std::vector<Platform> platform_list;
 
 extern IMAGE img_menu_background;                      // 主菜单背景图片
 
