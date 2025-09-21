@@ -55,10 +55,52 @@ public:
     void on_update(int delta) override {
         animation_peashooter.on_update(delta);
         animation_sunflower.on_update(delta);
+
+        // 背景板滚动扫描线每帧向右移动5个像素, 如果扫描线的位置大于等于选择背景图片的宽度, 让扫描线返回起点
+        selector_background_scroll_offset_x += 5;
+        if (selector_background_scroll_offset_x >= img_peashooter_selector_background_left.getwidth())
+            selector_background_scroll_offset_x = 0;
     }
 
     void on_draw(const Camera& camera) override {
+        IMAGE* img_p1_selector_background = nullptr;
+        IMAGE* img_p2_selector_background = nullptr;
+
+        switch (player_type_2) {
+        case PlayerType::Peashooter:
+            img_p1_selector_background = &img_peashooter_selector_background_right;
+            break;
+        case PlayerType::Sunflower:
+            img_p1_selector_background = &img_sunflower_selector_background_right;
+            break;
+        default:
+            img_p1_selector_background = &img_peashooter_selector_background_right;
+            break;
+        }
+
+        switch (player_type_1) {
+        case PlayerType::Peashooter:
+            img_p2_selector_background = &img_peashooter_selector_background_left;
+            break;
+        case PlayerType::Sunflower:
+            img_p2_selector_background = &img_sunflower_selector_background_left;
+            break;
+        default:
+            img_p2_selector_background = &img_peashooter_selector_background_left;
+            break;
+        }
+
         putimage(0, 0, &img_selector_background);
+
+        putimage_alpha(selector_background_scroll_offset_x - img_p1_selector_background->getwidth(), 0,
+                       img_p1_selector_background);
+        putimage_alpha(selector_background_scroll_offset_x, 0,
+                       img_p1_selector_background->getwidth() - selector_background_scroll_offset_x, 0,
+                       img_p1_selector_background, 0, 0);
+        putimage_alpha(getwidth() - img_p2_selector_background->getwidth(), 0,
+                       img_p2_selector_background->getwidth() - selector_background_scroll_offset_x, 0,
+                       img_p2_selector_background, selector_background_scroll_offset_x, 0);
+        putimage_alpha(getwidth() - selector_background_scroll_offset_x, 0, img_p2_selector_background);
 
         putimage_alpha(pos_img_VS.x, pos_img_VS.y, &img_VS);
 
@@ -99,14 +141,75 @@ public:
             break;
         default: break;
         }
+        putimage_alpha(pos_1P_selector_btn_left.x, pos_1P_selector_btn_left.y,
+                       is_btn_1P_left_down ? &img_1P_selector_btn_down_left : &img_1P_selector_btn_idle_left);
+        putimage_alpha(pos_1P_selector_btn_right.x, pos_1P_selector_btn_right.y,
+                       is_btn_1P_right_down ? &img_1P_selector_btn_down_right : &img_1P_selector_btn_idle_right);
+        putimage_alpha(pos_2P_selector_btn_left.x, pos_2P_selector_btn_left.y,
+                       is_btn_2P_left_down ? &img_2P_selector_btn_down_left : &img_2P_selector_btn_idle_left);
+        putimage_alpha(pos_2P_selector_btn_right.x, pos_2P_selector_btn_right.y,
+                       is_btn_2P_right_down ? &img_2P_selector_btn_down_right : &img_2P_selector_btn_idle_right);
+        putimage_alpha(pos_img_tip.x, pos_img_tip.y, &img_selector_tip);
 
         putimage_alpha(pos_img_1P_desc.x, pos_img_1P_desc.y, &img_1P_desc);
         putimage_alpha(pos_img_2P_desc.x, pos_img_2P_desc.y, &img_2P_desc);
-
-        putimage_alpha(pos_img_tip.x, pos_img_tip.y, &img_selector_tip);
     }
 
     void on_input(const ExMessage& msg) override {
+        switch (msg.message) {
+        case WM_KEYDOWN:
+            switch (msg.vkcode) {
+            case 0x41:
+                is_btn_1P_left_down = true;
+                break;
+            case 0x44:
+                is_btn_1P_right_down = true;
+                break;
+            case VK_LEFT:
+                is_btn_2P_left_down = true;
+                break;
+            case VK_RIGHT:
+                is_btn_2P_right_down = true;
+                break;
+            default: break;
+            }
+            break;
+        case WM_KEYUP:
+            switch (msg.vkcode) {
+            case 0x41:
+                is_btn_1P_left_down = false;
+                // 将玩家角色枚举转int并减1, 再加上Invalid的值, 确保其始终大于等于0
+                // 对Invalid的值进行取模, 确保最终的值不会大于等于Invalid的值
+                // 最后将这个int类型的值转化成PlayerType类型
+                player_type_1 = (PlayerType)(((int)PlayerType::Invalid +
+                    (int)player_type_1 - 1) % (int)PlayerType::Invalid);
+                mciSendString(_T("play ui_switch from 0"), nullptr, 0, nullptr);
+                break;
+            case 0x44:
+                is_btn_1P_right_down = false;
+                player_type_1 = (PlayerType)(((int)player_type_1 + 1) % (int)PlayerType::Invalid);
+                mciSendString(_T("play ui_switch from 0"), nullptr, 0, nullptr);
+                break;
+            case VK_LEFT:
+                is_btn_2P_left_down = false;
+                player_type_2 = (PlayerType)(((int)PlayerType::Invalid +
+                    (int)player_type_2 - 1) % (int)PlayerType::Invalid);
+                mciSendString(_T("play ui_switch from 0"), nullptr, 0, nullptr);
+                break;
+            case VK_RIGHT:
+                is_btn_2P_right_down = false;
+                player_type_2 = (PlayerType)(((int)player_type_2 + 1) % (int)PlayerType::Invalid);
+                mciSendString(_T("play ui_switch from 0"), nullptr, 0, nullptr);
+                break;
+            case VK_RETURN:
+                scene_manager.switch_to(SceneManager::SceneType::Game);
+                mciSendString(_T("play ui_confirm from 0"), nullptr, 0, nullptr);
+                break;
+            default: break;
+            }
+            break;
+        default: break;
+        }
     }
 
     void on_exit() override {

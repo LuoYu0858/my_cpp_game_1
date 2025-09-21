@@ -99,13 +99,13 @@ void load_game_resources() {
     flip_image(&img_gravestone_right, &img_gravestone_left);
     loadimage(&img_selector_tip, _T("resources/selector_tip.png"));
     loadimage(&img_selector_background, _T("resources/selector_background.png"));
-    loadimage(&img_1P_selector_btn_idle_right, _T("resources/1P_selector_btn_idle_right.png"));
+    loadimage(&img_1P_selector_btn_idle_right, _T("resources/1P_selector_btn_idle.png"));
     flip_image(&img_1P_selector_btn_idle_right, &img_1P_selector_btn_idle_left);
-    loadimage(&img_1P_selector_btn_down_right, _T("resources/1P_selector_btn_down_right.png"));
+    loadimage(&img_1P_selector_btn_down_right, _T("resources/1P_selector_btn_down.png"));
     flip_image(&img_1P_selector_btn_down_right, &img_1P_selector_btn_down_left);
-    loadimage(&img_2P_selector_btn_idle_right, _T("resources/2P_selector_btn_idle_right.png"));
+    loadimage(&img_2P_selector_btn_idle_right, _T("resources/2P_selector_btn_idle.png"));
     flip_image(&img_2P_selector_btn_idle_right, &img_2P_selector_btn_idle_left);
-    loadimage(&img_2P_selector_btn_down_right, _T("resources/2P_selector_btn_down_right.png"));
+    loadimage(&img_2P_selector_btn_down_right, _T("resources/2P_selector_btn_down.png"));
     flip_image(&img_2P_selector_btn_down_right, &img_2P_selector_btn_down_left);
     loadimage(&img_peashooter_selector_background_right, _T("resources/peashooter_selector_background.png"));
     flip_image(&img_peashooter_selector_background_right, &img_peashooter_selector_background_left);
