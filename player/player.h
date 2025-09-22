@@ -128,8 +128,8 @@ protected:
         velocity.y += gravity * (float)delta;   // G = g * time
         position += velocity * (float)delta;    // 将这一帧的位置按照移动的速度更新
 
-        // 单项平台碰撞
-        // 玩家可以从平台下向上跳跃到平台上, 但是无法转过平台
+        // 单向平台碰撞
+        // 玩家可以从平台下向上跳跃到平台上, 但是无法穿过平台
         // 检测玩家下落过程数据即可
         if (velocity.y > 0) {
             // 遍历场景中所有平台对象, 检测是否有玩家与平台发生碰撞
