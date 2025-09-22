@@ -10,9 +10,10 @@ class Platform {
 public:
     // 平台碰撞外形
     struct CollisionShape {
-        float y;            // 平台所在高度
-        float left, right;  // 平台碰撞左边缘、右边缘
+        float y = 0.0f;                     // 平台所在高度
+        float left = 0.0f, right = 0.0f;    // 平台碰撞左边缘、右边缘
     };
+
 public:
     Platform() = default;
     ~Platform() = default;
@@ -26,6 +27,7 @@ public:
             line(camera, (int)shape.left, (int)shape.y, (int)shape.right, (int)shape.y);
         }
     }
+
 public:
     IMAGE* img = nullptr;       // 平台图片
     CollisionShape shape;       // 平台碰撞外形

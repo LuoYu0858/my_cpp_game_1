@@ -90,10 +90,10 @@ public:
         player_2->on_input(msg);
 
         switch (msg.message) {
-        case WM_KEYUP:
-            if (msg.vkcode == 0x51) is_debug = not is_debug;
-            break;
-        default: break;
+            case WM_KEYUP:
+                if (msg.vkcode == 0x51) is_debug = not is_debug;
+                break;
+            default: break;
         }
     }
 

@@ -46,6 +46,7 @@ public:
             position.y = (-50 + (float)(rand() % 100)) / 50.f * shaking_strength;
         }
     }
+
 private:
     Vector2 position;           // 摄像机位置
     Timer timer_shake;          // 摄像机抖动定时器

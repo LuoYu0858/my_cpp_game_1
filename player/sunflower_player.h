@@ -17,13 +17,16 @@ public:
         animation_idle_right.set_interval(100);
         animation_run_left.set_interval(100);
         animation_run_right.set_interval(100);
+
+        size.x = 96, size.y = 96;
     };
-    ~SunflowerPlayer() = default;
+    ~SunflowerPlayer() override = default;
 
     void on_update(int delta) override {
         Player::on_update(delta);
         std::cout << "向日葵正在更新" << std::endl;
     }
+
 private:
 };
 
