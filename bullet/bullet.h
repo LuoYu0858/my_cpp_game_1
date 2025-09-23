@@ -13,7 +13,7 @@
 class Bullet {
 public:
     Bullet() = default;
-    ~Bullet() = default;
+    virtual ~Bullet() = default;
 
     int get_damage() {
         return damage;
@@ -69,11 +69,11 @@ public:
     }
 
     // 子弹是否与玩家发生碰撞
-    virtual bool check_collision(const Vector2& pos, const Vector2& size) {
+    virtual bool check_collision(const Vector2& pos, const Vector2& p_size) {
         return this->position.x + this->size.x / 2 >= pos.x
-                and this->position.x + this->size.x / 2 <= pos.x + size.x
+                and this->position.x + this->size.x / 2 <= pos.x + p_size.x
                 and this->position.y + this->size.y / 2 >= pos.y
-                and this->position.y + this->size.y / 2 <= pos.y + size.y;
+                and this->position.y + this->size.y / 2 <= pos.y + p_size.y;
     }
 
     virtual void on_update(int delta) {}
