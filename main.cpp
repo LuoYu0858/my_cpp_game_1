@@ -1,14 +1,13 @@
 ﻿#include "util.h"
 #include "atlas.h"
 #include "scene.h"
+#include "bullet.h"
 #include "player.h"
 #include "platform.h"
 #include "menu_scene.h"
 #include "game_scene.h"
 #include "scene_manager.h"
 #include "selector_scene.h"
-
-#include <graphics.h>
 
 #pragma comment(lib, "Winmm.lib")
 
@@ -26,6 +25,8 @@ std::vector<Platform> platform_list;
 
 Player* player_1 = nullptr;
 Player* player_2 = nullptr;
+
+std::vector<Bullet*> bullet_list;
 
 IMAGE img_menu_background;                      // 主菜单背景图片
 

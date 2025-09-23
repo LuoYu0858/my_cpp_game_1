@@ -15,6 +15,10 @@ class Player {
 public:
     Player() {
         current_animation = &animation_idle_right;
+
+        timer_attack_cd.set_wait_time(attack_cd);
+        timer_attack_cd.set_one_shot(true);
+        timer_attack_cd.set_callback([&]() { can_attack = true; });
     }
 
     virtual ~Player() = default;
@@ -33,6 +37,8 @@ public:
             current_animation = is_facing_right ? &animation_idle_right : &animation_idle_left;
         }
         current_animation->on_update(delta);
+
+        timer_attack_cd.on_update(delta);
 
         move_and_collide(delta);
     }
@@ -56,6 +62,19 @@ public:
                             case 0x57:
                                 on_jump();
                                 break;
+                            case 0x46:
+                                if (can_attack) {
+                                    on_attack();
+                                    can_attack = false;
+                                    timer_attack_cd.restart();
+                                }
+                                break;
+                            case 0x47:
+                                if (mp >= 100) {
+                                    on_attack_ex();
+                                    mp = 0;
+                                }
+                                break;
                             default: break;
                         }
                         break;
@@ -69,6 +88,19 @@ public:
                                 break;
                             case VK_UP:
                                 on_jump();
+                                break;
+                            case VK_OEM_PERIOD:
+                                if (can_attack) {
+                                    on_attack();
+                                    can_attack = false;
+                                    timer_attack_cd.restart();
+                                }
+                                break;
+                            case VK_OEM_2:
+                                if (mp >= 100) {
+                                    on_attack_ex();
+                                    mp = 0;
+                                }
                                 break;
                             default: break;
                         }
@@ -107,13 +139,18 @@ public:
     }
 
     virtual void on_run(float distance) {
+        if (is_attacking_ex) return;
         position.x += distance;
     }
 
     virtual void on_jump() {
         // 只有竖直方向速度为0才可跳跃
-        if (velocity.y == 0) velocity.y += jump_velocity;
+        if (velocity.y == 0 or not is_attacking_ex) velocity.y += jump_velocity;
     }
+
+    virtual void on_attack() = 0;
+
+    virtual void on_attack_ex() = 0;
 
     void set_id(PlayerID player_id) {
         id = player_id;
@@ -121,6 +158,14 @@ public:
 
     void set_position(float x, float y) {
         position.x = x, position.y = y;
+    }
+
+    [[nodiscard]] const Vector2& get_position() const {
+        return position;
+    }
+
+    [[nodiscard]] const Vector2& get_size() const {
+        return size;
     }
 
 protected:
@@ -195,6 +240,9 @@ protected:
     const float run_velocity = .45f;        // 跑动速度
     const float jump_velocity = -.75f;      // 跳跃速度
 protected:
+    int hp = 100;                           // 角色生命值
+    int mp = 0;                             // 角色能量
+
     Vector2 size;                           // 角色尺寸
     Vector2 position;                       // 角色位置
     Vector2 velocity;                       // 角色速度
@@ -203,6 +251,8 @@ protected:
     Animation animation_idle_right;         // 朝向右的默认动画
     Animation animation_run_left;           // 朝向左的奔跑动画
     Animation animation_run_right;          // 朝向右的奔跑动画
+    Animation animation_attack_ex_left;     // 朝向左的特殊攻击动画
+    Animation animation_attack_ex_right;     // 朝向右的特殊攻击动画
 
     Animation* current_animation = nullptr; // 当前正在播放的动画
 
@@ -212,6 +262,14 @@ protected:
     bool is_right_key_down = false;         // 向右移动按键是否按下
 
     bool is_facing_right = true;            // 角色是否面向右侧
+
+    bool can_attack = true;                 // 是否可以释放普通攻击
+
+    bool is_attacking_ex = false;           // 是否正在释放特殊攻击
+
+    Timer timer_attack_cd;                  // 普通攻击冷却时间定时器
+
+    int attack_cd = 500;                    // 玩家普通攻击冷却时间(ms)
 };
 
 #endif //PLANTSVSPLANTS_PLAYER_H

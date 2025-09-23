@@ -5,6 +5,7 @@ class Atlas;
 class IScene;
 class Camera;
 class Player;
+class Bullet;
 class Platform;
 class SceneManager;
 
@@ -22,6 +23,8 @@ extern std::vector<Platform> platform_list;
 
 extern Player* player_1;
 extern Player* player_2;
+
+extern std::vector<Bullet*> bullet_list;
 
 extern IMAGE img_menu_background;                      // 主菜单背景图片
 
