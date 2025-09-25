@@ -108,7 +108,7 @@ public:
 
 private:
     const float speed_sun_ex = .15f;                // 大型日光炸弹下落速度
-    const Vector2 velocity_sun = {.25f, -.5f};  // 小型日光炸弹抛射速度
+    const Vector2 velocity_sun = {.2f, -.7f};   // 小型日光炸弹抛射速度
 
 private:
     Animation animation_sun_text;       // 头顶文本动画

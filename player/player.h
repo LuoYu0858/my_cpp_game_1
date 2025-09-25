@@ -4,6 +4,7 @@
 #include "camera.h"
 #include "vector2.h"
 #include "platform.h"
+#include "particle.h"
 #include "animation.h"
 #include "player_id.h"
 #include "global_variable.h"
@@ -28,6 +29,26 @@ public:
         timer_invulnerable_blink.set_callback([&]() {
             is_showing_sketch_frame = not is_showing_sketch_frame;
         });
+
+        timer_run_effect_generation.set_wait_time(100);
+        timer_run_effect_generation.set_callback([&]() {
+            IMAGE* frame = atlas_run_effect.get_image(0);
+            Vector2 particle_position {
+                position.x + (size.x - frame->getwidth()) / 2,
+                position.y + size.y - frame->getheight()
+            };
+            particle_list.emplace_back(particle_position, &atlas_run_effect, 45);
+        });
+
+        timer_die_effect_generation.set_wait_time(45);
+        timer_die_effect_generation.set_callback([&]() {
+            IMAGE* frame = atlas_run_effect.get_image(0);
+            Vector2 particle_position {
+                position.x + (size.x - frame->getwidth()) / 2,
+                position.y + size.y - frame->getheight()
+            };
+            particle_list.emplace_back(particle_position, &atlas_run_effect, 150);
+        });
     }
 
     virtual ~Player() = default;
@@ -45,6 +66,7 @@ public:
         } else {
             // 玩家没有移动
             current_animation = is_facing_right ? &animation_idle_right : &animation_idle_left;
+            timer_run_effect_generation.pause();
         }
         if (is_attacking_ex)
             current_animation = is_facing_right ? &animation_attack_ex_right : &animation_attack_ex_left;
@@ -54,6 +76,15 @@ public:
         timer_attack_cd.on_update(delta);
         timer_invulnerable.on_update(delta);
         timer_invulnerable_blink.on_update(delta);
+        timer_run_effect_generation.on_update(delta);
+
+        if (hp <= 0) timer_die_effect_generation.on_update(delta);
+
+        erase_if(particle_list, [](const Particle& particle) {
+            return not particle.check_valid();
+        });
+
+        for (auto& particle : particle_list) particle.on_update(delta);
 
         if (is_showing_sketch_frame) sketch_image(current_animation->get_frame(), &img_sketch);
 
@@ -61,6 +92,7 @@ public:
     }
 
     virtual void on_draw(const Camera& camera) {
+        for (auto& particle : particle_list) particle.on_draw(camera);
         if (hp > 0 and is_invulnerable and is_showing_sketch_frame)
             putimage_alpha(camera, (int)position.x, (int)position.y, &img_sketch);
         else
@@ -165,11 +197,12 @@ public:
     virtual void on_run(float distance) {
         if (is_attacking_ex) return;
         position.x += distance;
+        timer_run_effect_generation.resume();
     }
 
     virtual void on_jump() {
         // 只有竖直方向速度为0且不处于特殊攻击状态才可跳跃
-        if (velocity.y == 0 or not is_attacking_ex) velocity.y += jump_velocity;
+        if (velocity.y == 0 and not is_attacking_ex) velocity.y += jump_velocity;
     }
 
     virtual void on_attack() = 0;
@@ -287,11 +320,13 @@ protected:
 
 protected:
     const float gravity = 1.6e-3f;          // 玩家重力
-    const float run_velocity = .45f;        // 跑动速度
+    const float run_velocity = .6f;         // 跑动速度
     const float jump_velocity = -.75f;      // 跳跃速度
 protected:
     int hp = 100;                           // 角色生命值
     int mp = 0;                             // 角色能量
+
+    int attack_cd = 500;                    // 玩家普通攻击冷却时间(ms)
 
     Vector2 size;                           // 角色尺寸
     Vector2 position;                       // 角色位置
@@ -325,9 +360,12 @@ protected:
     Timer timer_invulnerable;               // 无敌状态定时器
     Timer timer_invulnerable_blink;         // 无敌状态闪烁定时器
 
-    int attack_cd = 500;                    // 玩家普通攻击冷却时间(ms)
+    Timer timer_run_effect_generation;      // 跑动特效粒子发射定时器
+    Timer timer_die_effect_generation;      // 死亡特效粒子发射定时器
 
     IMAGE img_sketch;                       // 动画帧剪影图片
+
+    std::vector<Particle> particle_list;    // 粒子对象列表
 };
 
 #endif //PLANTSVSPLANTS_PLAYER_H
