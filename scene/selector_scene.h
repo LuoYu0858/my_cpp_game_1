@@ -220,9 +220,11 @@ public:
         switch (player_type_1) {
             case PlayerType::Peashooter:
                 player_1 = new PeashooterPlayer();
+                img_player_1_avatar = &img_avatar_peashooter;
                 break;
             case PlayerType::Sunflower:
                 player_1 = new SunflowerPlayer();
+                img_player_1_avatar = &img_avatar_sunflower;
                 break;
             default: break;
         }
@@ -231,9 +233,11 @@ public:
         switch (player_type_2) {
             case PlayerType::Peashooter:
                 player_2 = new PeashooterPlayer();
+                img_player_2_avatar = &img_avatar_peashooter;
                 break;
             case PlayerType::Sunflower:
                 player_2 = new SunflowerPlayer();
+                img_player_2_avatar = &img_avatar_sunflower;
                 break;
             default: break;
         }

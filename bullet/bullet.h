@@ -1,11 +1,10 @@
 ﻿#ifndef PLANTSVSPLANTS_BULLET_H
 #define PLANTSVSPLANTS_BULLET_H
 
-#include <easyx.h>
-
 #include "camera.h"
 #include "vector2.h"
 #include "player_id.h"
+#include "global_variable.h"
 
 #include <functional>
 
@@ -15,7 +14,7 @@ public:
     Bullet() = default;
     virtual ~Bullet() = default;
 
-    int get_damage() {
+    [[nodiscard]] int get_damage() const {
         return damage;
     }
 
@@ -52,7 +51,7 @@ public:
         callback = func;
     }
 
-    bool get_valid() const {
+    [[nodiscard]] bool get_valid() const {
         return valid;
     }
 
@@ -60,7 +59,7 @@ public:
         valid = flag;
     }
 
-    bool check_can_remove() const {
+    [[nodiscard]] bool check_can_remove() const {
         return can_remove;
     }
 
@@ -78,12 +77,19 @@ public:
 
     virtual void on_update(int delta) {}
 
-    virtual void on_draw(const Camera& camera) const {}
+    virtual void on_draw(const Camera& camera) const {
+        if (is_debug) {
+            setfillcolor(RGB(255, 255, 255));
+            setlinecolor(RGB(255, 255, 255));
+            rectangle((int)position.x, (int)position.y, (int)(position.x + size.x), (int)(position.y + size.y));
+            solidcircle((int)(position.x + size.x / 2), (int)(position.y + size.y / 2), 5);
+        }
+    }
 
 protected:
     // 检测子弹是否飞出屏幕
     // 子弹边界是否全部位于屏幕边界外
-    bool check_if_exceeds_screen() {
+    [[nodiscard]] bool check_if_exceeds_screen() const {
         return position.x + size.x <= 0 or position.x >= getwidth()
                 or position.y + size.y <= 0 or position.y >= getheight();
     }

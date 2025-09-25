@@ -26,6 +26,9 @@ extern Player* player_2;
 
 extern std::vector<Bullet*> bullet_list;
 
+extern IMAGE* img_player_1_avatar;
+extern IMAGE* img_player_2_avatar;
+
 extern IMAGE img_menu_background;                      // 主菜单背景图片
 
 extern IMAGE img_VS;                                   // VS艺术字图片

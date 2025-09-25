@@ -19,6 +19,15 @@ public:
         timer_attack_cd.set_wait_time(attack_cd);
         timer_attack_cd.set_one_shot(true);
         timer_attack_cd.set_callback([&]() { can_attack = true; });
+
+        timer_invulnerable.set_wait_time(750);
+        timer_invulnerable.set_one_shot(true);
+        timer_invulnerable.set_callback([&]() { is_invulnerable = false; });
+
+        timer_invulnerable_blink.set_wait_time(75);
+        timer_invulnerable_blink.set_callback([&]() {
+            is_showing_sketch_frame = not is_showing_sketch_frame;
+        });
     }
 
     virtual ~Player() = default;
@@ -27,6 +36,7 @@ public:
         // 判断玩家移动方向
         int direction = is_right_key_down - is_left_key_down;
         if (direction != 0) {
+            if (not is_attacking_ex) is_facing_right = direction > 0;
             // 玩家正在移动
             is_facing_right = direction > 0;
             current_animation = is_facing_right ? &animation_run_right : &animation_run_left;
@@ -36,15 +46,29 @@ public:
             // 玩家没有移动
             current_animation = is_facing_right ? &animation_idle_right : &animation_idle_left;
         }
+        if (is_attacking_ex)
+            current_animation = is_facing_right ? &animation_attack_ex_right : &animation_attack_ex_left;
+
         current_animation->on_update(delta);
 
         timer_attack_cd.on_update(delta);
+        timer_invulnerable.on_update(delta);
+        timer_invulnerable_blink.on_update(delta);
+
+        if (is_showing_sketch_frame) sketch_image(current_animation->get_frame(), &img_sketch);
 
         move_and_collide(delta);
     }
 
     virtual void on_draw(const Camera& camera) {
-        current_animation->on_draw(camera, (int)position.x, (int)position.y);
+        if (hp > 0 and is_invulnerable and is_showing_sketch_frame)
+            putimage_alpha(camera, (int)position.x, (int)position.y, &img_sketch);
+        else
+            current_animation->on_draw(camera, (int)position.x, (int)position.y);
+        if (is_debug) {
+            setlinecolor(RGB(0, 125, 255));
+            rectangle((int)position.x, (int)position.y, (int)(position.x + size.x), (int)(position.y + size.y));
+        }
     }
 
     virtual void on_input(const ExMessage& msg) {
@@ -144,13 +168,19 @@ public:
     }
 
     virtual void on_jump() {
-        // 只有竖直方向速度为0才可跳跃
+        // 只有竖直方向速度为0且不处于特殊攻击状态才可跳跃
         if (velocity.y == 0 or not is_attacking_ex) velocity.y += jump_velocity;
     }
 
     virtual void on_attack() = 0;
 
     virtual void on_attack_ex() = 0;
+
+    // 进入无敌状态
+    void make_invulnerable() {
+        is_invulnerable = true;
+        timer_invulnerable.restart();
+    }
 
     void set_id(PlayerID player_id) {
         id = player_id;
@@ -166,6 +196,14 @@ public:
 
     [[nodiscard]] const Vector2& get_size() const {
         return size;
+    }
+
+    [[nodiscard]] int get_hp() const {
+        return hp;
+    }
+
+    [[nodiscard]] int get_mp() const {
+        return mp;
     }
 
 protected:
@@ -233,6 +271,18 @@ protected:
                 }
             }
         }
+        // 玩家与子弹碰撞监测
+        if (not is_invulnerable) {
+            for (auto bullet : bullet_list) {
+                if (not bullet->get_valid() or bullet->get_collide_target() != id) continue;
+                if (bullet->check_collision(position, size)) {
+                    make_invulnerable();
+                    bullet->on_collide();
+                    bullet->set_valid(false);
+                    hp -= bullet->get_damage();
+                }
+            }
+        }
     }
 
 protected:
@@ -267,9 +317,17 @@ protected:
 
     bool is_attacking_ex = false;           // 是否正在释放特殊攻击
 
+    bool is_invulnerable = false;           // 角色是否处于无敌状态
+    bool is_showing_sketch_frame = false;   // 当前帧是否应该显示剪影
+
     Timer timer_attack_cd;                  // 普通攻击冷却时间定时器
 
+    Timer timer_invulnerable;               // 无敌状态定时器
+    Timer timer_invulnerable_blink;         // 无敌状态闪烁定时器
+
     int attack_cd = 500;                    // 玩家普通攻击冷却时间(ms)
+
+    IMAGE img_sketch;                       // 动画帧剪影图片
 };
 
 #endif //PLANTSVSPLANTS_PLAYER_H
