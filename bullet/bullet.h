@@ -7,6 +7,7 @@
 #include "global_variable.h"
 
 #include <functional>
+#include <utility>
 
 // 子弹基类
 class Bullet {
@@ -48,7 +49,7 @@ public:
     }
 
     void set_callback(std::function<void()> func) {
-        callback = func;
+        callback = std::move(func);
     }
 
     [[nodiscard]] bool get_valid() const {
@@ -90,8 +91,8 @@ protected:
     // 检测子弹是否飞出屏幕
     // 子弹边界是否全部位于屏幕边界外
     [[nodiscard]] bool check_if_exceeds_screen() const {
-        return position.x + size.x <= 0 or position.x >= getwidth()
-                or position.y + size.y <= 0 or position.y >= getheight();
+        return position.x + size.x <= 0 or position.x >= static_cast<float>(getwidth())
+                or position.y + size.y <= 0 or position.y >= static_cast<float>(getheight());
     }
 
 protected:

@@ -8,7 +8,7 @@
 
 class SunflowerPlayer : public Player {
 public:
-    SunflowerPlayer() {
+    explicit SunflowerPlayer(bool facing_right = true) : Player(facing_right) {
         animation_idle_left.set_atlas(&atlas_sunflower_idle_left);
         animation_idle_right.set_atlas(&atlas_sunflower_idle_right);
         animation_run_left.set_atlas(&atlas_sunflower_run_left);
@@ -16,6 +16,8 @@ public:
         animation_attack_ex_left.set_atlas(&atlas_sunflower_attack_ex_left);
         animation_attack_ex_right.set_atlas(&atlas_sunflower_attack_ex_right);
         animation_sun_text.set_atlas(&atlas_sun_text);
+        animation_die_left.set_atlas(&atlas_sunflower_die_left);
+        animation_die_right.set_atlas(&atlas_sunflower_die_right);
 
         animation_idle_left.set_interval(100);
         animation_idle_right.set_interval(100);
@@ -24,7 +26,11 @@ public:
         animation_attack_ex_left.set_interval(100);
         animation_attack_ex_right.set_interval(100);
         animation_sun_text.set_interval(100);
+        animation_die_left.set_interval(175);
+        animation_die_right.set_interval(175);
 
+        animation_die_left.set_loop(false);
+        animation_die_right.set_loop(false);
         animation_attack_ex_left.set_loop(false);
         animation_attack_ex_right.set_loop(false);
         animation_sun_text.set_loop(false);
@@ -57,8 +63,8 @@ public:
         if (is_sun_text_visible) {
             IMAGE* frame = animation_sun_text.get_frame();
             Vector2 text_position = {
-                position.x - (size.x - frame->getwidth()) / 2,
-                position.y - frame->getheight()
+                position.x - (size.x - static_cast<float>(frame->getwidth())) / 2,
+                position.y - static_cast<float>(frame->getheight())
             };
             animation_sun_text.on_draw(camera, (int)text_position.x, (int)text_position.y);
         }

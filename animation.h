@@ -7,6 +7,7 @@
 
 #include <graphics.h>
 #include <functional>
+#include <utility>
 
 // 动画类
 class Animation {
@@ -38,11 +39,11 @@ public:
 
     // 设置回调函数
     void set_callback(std::function<void()> func) {
-        callback = func;
+        callback = std::move(func);
     }
 
     // 获取动画帧索引
-    int get_idx_frame() {
+    [[nodiscard]] int get_idx_frame() const {
         return idx_frame;
     }
 

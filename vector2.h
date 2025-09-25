@@ -1,8 +1,6 @@
 ﻿#ifndef PLANTSVSPLANTS_VECTOR2_H
 #define PLANTSVSPLANTS_VECTOR2_H
 
-#include <cmath>
-
 // 二维向量类
 class Vector2 {
 public:

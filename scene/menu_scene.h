@@ -25,7 +25,7 @@ public:
     }
 
     // 菜单场景渲染
-    void on_draw(const Camera& camera) override {
+    void on_draw(const Camera& o_camera) override {
         putimage(0, 0, &img_menu_background);
     }
 

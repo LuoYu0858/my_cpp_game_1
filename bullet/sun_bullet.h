@@ -23,8 +23,8 @@ public:
         IMAGE* frame_idle = animation_idle.get_frame();
         IMAGE* frame_explode = animation_explode.get_frame();
         explode_render_offset = {
-            (frame_idle->getwidth() - frame_explode->getwidth()) / 2.0f,
-            (frame_idle->getheight() - frame_explode->getheight()) / 2.0f
+            (static_cast<float>(frame_idle->getwidth()) - static_cast<float>(frame_explode->getwidth())) / 2.0f,
+            (static_cast<float>(frame_idle->getheight()) - static_cast<float>(frame_explode->getheight())) / 2.0f
         };
     }
 
@@ -40,7 +40,7 @@ public:
 
     void on_update(int delta) override {
         if (valid) {
-            velocity.y += gravity * delta;
+            velocity.y += gravity * (float)delta;
             position += velocity * (float)delta;
         }
 

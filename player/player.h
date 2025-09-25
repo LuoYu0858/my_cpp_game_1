@@ -14,8 +14,8 @@
 // 玩家基类
 class Player {
 public:
-    Player() {
-        current_animation = &animation_idle_right;
+    explicit Player(bool facing_right) : is_facing_right(facing_right) {
+        current_animation = is_facing_right ? &animation_idle_right : &animation_idle_left;
 
         timer_attack_cd.set_wait_time(attack_cd);
         timer_attack_cd.set_one_shot(true);
@@ -34,8 +34,8 @@ public:
         timer_run_effect_generation.set_callback([&]() {
             IMAGE* frame = atlas_run_effect.get_image(0);
             Vector2 particle_position{
-                position.x + (size.x - frame->getwidth()) / 2,
-                position.y + size.y - frame->getheight()
+                position.x + (size.x - static_cast<float>(frame->getwidth())) / 2,
+                position.y + size.y - static_cast<float>(frame->getheight())
             };
             particle_list.emplace_back(particle_position, &atlas_run_effect, 45);
         });
@@ -44,8 +44,8 @@ public:
         timer_die_effect_generation.set_callback([&]() {
             IMAGE* frame = atlas_run_effect.get_image(0);
             Vector2 particle_position{
-                position.x + (size.x - frame->getwidth()) / 2,
-                position.y + size.y - frame->getheight()
+                position.x + (size.x - static_cast<float>(frame->getwidth())) / 2,
+                position.y + size.y - static_cast<float>(frame->getheight())
             };
             particle_list.emplace_back(particle_position, &atlas_run_effect, 150);
         });
@@ -59,6 +59,10 @@ public:
         animation_land_effect.set_interval(25);
         animation_land_effect.set_loop(false);
         animation_land_effect.set_callback([&]() { is_land_effect_visible = false; });
+
+        timer_cursor_visibility.set_wait_time(3500);
+        timer_cursor_visibility.set_one_shot(true);
+        timer_cursor_visibility.set_callback([&]() { is_cursor_visible = false; });
     }
 
     virtual ~Player() = default;
@@ -81,8 +85,10 @@ public:
         if (is_attacking_ex)
             current_animation = is_facing_right ? &animation_attack_ex_right : &animation_attack_ex_left;
 
-        current_animation->on_update(delta);
+        if (hp <= 0)
+            current_animation = last_hurt_direction.x < 0 ? &animation_die_left : &animation_die_right;
 
+        current_animation->on_update(delta);
         animation_jump_effect.on_update(delta);
         animation_land_effect.on_update(delta);
 
@@ -90,6 +96,7 @@ public:
         timer_invulnerable.on_update(delta);
         timer_invulnerable_blink.on_update(delta);
         timer_run_effect_generation.on_update(delta);
+        timer_cursor_visibility.on_update(delta);
 
         if (hp <= 0) timer_die_effect_generation.on_update(delta);
 
@@ -114,6 +121,20 @@ public:
             putimage_alpha(camera, (int)position.x, (int)position.y, &img_sketch);
         else
             current_animation->on_draw(camera, (int)position.x, (int)position.y);
+        if (is_cursor_visible) {
+            switch (id) {
+                case PlayerID::P1:
+                    putimage_alpha(
+                        camera, (int)(position.x + (size.x - static_cast<float>(img_1P_cursor.getwidth())) / 2),
+                        (int)(position.y - static_cast<float>(img_1P_cursor.getheight())), &img_1P_cursor);
+                    break;
+                case PlayerID::P2:
+                    putimage_alpha(
+                        camera, (int)(position.x + (size.x - static_cast<float>(img_2P_cursor.getwidth())) / 2),
+                        (int)(position.y - static_cast<float>(img_2P_cursor.getheight())), &img_2P_cursor);
+                    break;
+            }
+        }
         if (is_debug) {
             setlinecolor(RGB(0, 125, 255));
             rectangle((int)position.x, (int)position.y, (int)(position.x + size.x), (int)(position.y + size.y));
@@ -225,8 +246,8 @@ public:
 
         IMAGE* effect_frame = animation_jump_effect.get_frame();
         position_jump_effect = {
-            position.x + (size.x - effect_frame->getwidth()) / 2,
-            position.y + size.y - effect_frame->getheight()
+            position.x + (size.x - static_cast<float>(effect_frame->getwidth())) / 2,
+            position.y + size.y - static_cast<float>(effect_frame->getheight())
         };
     }
 
@@ -236,8 +257,8 @@ public:
 
         IMAGE* effect_frame = animation_land_effect.get_frame();
         position_land_effect = {
-            position.x + (size.x - effect_frame->getwidth()) / 2,
-            position.y + size.y - effect_frame->getheight()
+            position.x + (size.x - static_cast<float>(effect_frame->getwidth())) / 2,
+            position.y + size.y - static_cast<float>(effect_frame->getheight())
         };
     }
 
@@ -257,6 +278,10 @@ public:
 
     void set_position(float x, float y) {
         position.x = x, position.y = y;
+    }
+
+    void set_hp(int val) {
+        hp = val;
     }
 
     [[nodiscard]] const Vector2& get_position() const {
@@ -281,6 +306,8 @@ protected:
 
         velocity.y += gravity * (float)delta;   // G = g * time
         position += velocity * (float)delta;    // 将这一帧的位置按照移动的速度更新
+
+        if (hp <= 0) return;
 
         // 单向平台碰撞
         // 玩家可以从平台下向上跳跃到平台上, 但是无法穿过平台
@@ -353,6 +380,11 @@ protected:
                     bullet->on_collide();
                     bullet->set_valid(false);
                     hp -= bullet->get_damage();
+                    last_hurt_direction = bullet->get_position() - position;
+                    if (hp <= 0) {
+                        velocity.x = last_hurt_direction.x < 0 ? .4f : -.4f;
+                        velocity.y = -.9f;
+                    }
                 }
             }
         }
@@ -375,6 +407,8 @@ protected:
     Vector2 position_jump_effect;           // 跳跃动画播放位置
     Vector2 position_land_effect;           // 落地动画播放位置
 
+    Vector2 last_hurt_direction;            // 最后一次受击方向
+
     Animation animation_idle_left;          // 朝向左的默认动画
     Animation animation_idle_right;         // 朝向右的默认动画
     Animation animation_run_left;           // 朝向左的奔跑动画
@@ -383,6 +417,8 @@ protected:
     Animation animation_attack_ex_right;    // 朝向右的特殊攻击动画
     Animation animation_jump_effect;        // 跳跃特效动画
     Animation animation_land_effect;        // 落地特效动画
+    Animation animation_die_left;           // 朝向左的死亡动画
+    Animation animation_die_right;          // 朝向右的死亡动画
 
     Animation* current_animation = nullptr; // 当前正在播放的动画
 
@@ -402,6 +438,10 @@ protected:
 
     bool is_jump_effect_visible = false;    // 跳跃动画是否可见
     bool is_land_effect_visible = false;    // 落地动画是否可见
+
+    bool is_cursor_visible = true;          // 玩家光标指示器是否显示
+
+    Timer timer_cursor_visibility;          // 玩家光标指示器可见定时器
 
     Timer timer_attack_cd;                  // 普通攻击冷却时间定时器
 

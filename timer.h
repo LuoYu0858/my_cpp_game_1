@@ -2,6 +2,7 @@
 #define PLANTSVSPLANTS_TIMER_H
 
 #include <functional>
+#include <utility>
 
 // 定时器类
 class Timer {
@@ -28,7 +29,7 @@ public:
 
     // 设置回调函数
     void set_callback(std::function<void()> func) {
-        callback = func;
+        callback = std::move(func);
     }
 
     // 暂停
