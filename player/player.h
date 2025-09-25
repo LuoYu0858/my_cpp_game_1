@@ -33,7 +33,7 @@ public:
         timer_run_effect_generation.set_wait_time(100);
         timer_run_effect_generation.set_callback([&]() {
             IMAGE* frame = atlas_run_effect.get_image(0);
-            Vector2 particle_position {
+            Vector2 particle_position{
                 position.x + (size.x - frame->getwidth()) / 2,
                 position.y + size.y - frame->getheight()
             };
@@ -43,12 +43,22 @@ public:
         timer_die_effect_generation.set_wait_time(45);
         timer_die_effect_generation.set_callback([&]() {
             IMAGE* frame = atlas_run_effect.get_image(0);
-            Vector2 particle_position {
+            Vector2 particle_position{
                 position.x + (size.x - frame->getwidth()) / 2,
                 position.y + size.y - frame->getheight()
             };
             particle_list.emplace_back(particle_position, &atlas_run_effect, 150);
         });
+
+        animation_jump_effect.set_atlas(&atlas_jump_effect);
+        animation_jump_effect.set_interval(25);
+        animation_jump_effect.set_loop(false);
+        animation_jump_effect.set_callback([&]() { is_jump_effect_visible = false; });
+
+        animation_land_effect.set_atlas(&atlas_land_effect);
+        animation_land_effect.set_interval(25);
+        animation_land_effect.set_loop(false);
+        animation_land_effect.set_callback([&]() { is_land_effect_visible = false; });
     }
 
     virtual ~Player() = default;
@@ -73,6 +83,9 @@ public:
 
         current_animation->on_update(delta);
 
+        animation_jump_effect.on_update(delta);
+        animation_land_effect.on_update(delta);
+
         timer_attack_cd.on_update(delta);
         timer_invulnerable.on_update(delta);
         timer_invulnerable_blink.on_update(delta);
@@ -92,6 +105,10 @@ public:
     }
 
     virtual void on_draw(const Camera& camera) {
+        if (is_jump_effect_visible)
+            animation_jump_effect.on_draw(camera, (int)position_jump_effect.x, (int)position_jump_effect.y);
+        if (is_land_effect_visible)
+            animation_land_effect.on_draw(camera, (int)position_land_effect.x, (int)position_land_effect.y);
         for (auto& particle : particle_list) particle.on_draw(camera);
         if (hp > 0 and is_invulnerable and is_showing_sketch_frame)
             putimage_alpha(camera, (int)position.x, (int)position.y, &img_sketch);
@@ -203,6 +220,25 @@ public:
     virtual void on_jump() {
         // 只有竖直方向速度为0且不处于特殊攻击状态才可跳跃
         if (velocity.y == 0 and not is_attacking_ex) velocity.y += jump_velocity;
+        is_jump_effect_visible = true;
+        animation_jump_effect.reset();
+
+        IMAGE* effect_frame = animation_jump_effect.get_frame();
+        position_jump_effect = {
+            position.x + (size.x - effect_frame->getwidth()) / 2,
+            position.y + size.y - effect_frame->getheight()
+        };
+    }
+
+    virtual void on_land() {
+        is_land_effect_visible = true;
+        animation_land_effect.reset();
+
+        IMAGE* effect_frame = animation_land_effect.get_frame();
+        position_land_effect = {
+            position.x + (size.x - effect_frame->getwidth()) / 2,
+            position.y + size.y - effect_frame->getheight()
+        };
     }
 
     virtual void on_attack() = 0;
@@ -241,6 +277,8 @@ public:
 
 protected:
     void move_and_collide(int delta) {
+        float last_velocity_y = velocity.y;
+
         velocity.y += gravity * (float)delta;   // G = g * time
         position += velocity * (float)delta;    // 将这一帧的位置按照移动的速度更新
 
@@ -299,6 +337,8 @@ protected:
                     if (last_tick_foot_pos_y <= y) {
                         position.y = y - size.y;
                         velocity.y = 0;
+                        // 前一帧竖直速度不为0, 当前帧竖直速度为0, 那么这一帧玩家落到平台上
+                        if (last_velocity_y != 0) on_land();
                         break;
                     }
                 }
@@ -332,12 +372,17 @@ protected:
     Vector2 position;                       // 角色位置
     Vector2 velocity;                       // 角色速度
 
+    Vector2 position_jump_effect;           // 跳跃动画播放位置
+    Vector2 position_land_effect;           // 落地动画播放位置
+
     Animation animation_idle_left;          // 朝向左的默认动画
     Animation animation_idle_right;         // 朝向右的默认动画
     Animation animation_run_left;           // 朝向左的奔跑动画
     Animation animation_run_right;          // 朝向右的奔跑动画
     Animation animation_attack_ex_left;     // 朝向左的特殊攻击动画
-    Animation animation_attack_ex_right;     // 朝向右的特殊攻击动画
+    Animation animation_attack_ex_right;    // 朝向右的特殊攻击动画
+    Animation animation_jump_effect;        // 跳跃特效动画
+    Animation animation_land_effect;        // 落地特效动画
 
     Animation* current_animation = nullptr; // 当前正在播放的动画
 
@@ -354,6 +399,9 @@ protected:
 
     bool is_invulnerable = false;           // 角色是否处于无敌状态
     bool is_showing_sketch_frame = false;   // 当前帧是否应该显示剪影
+
+    bool is_jump_effect_visible = false;    // 跳跃动画是否可见
+    bool is_land_effect_visible = false;    // 落地动画是否可见
 
     Timer timer_attack_cd;                  // 普通攻击冷却时间定时器
 
