@@ -54,6 +54,8 @@ IMAGE img_peashooter_selector_background_left;  // 选角界面朝向左的豌�
 IMAGE img_peashooter_selector_background_right; // 选角界面朝向右的豌豆射手背景图片
 IMAGE img_sunflower_selector_background_left;   // 选角界面朝向左的向日葵背景图片
 IMAGE img_sunflower_selector_background_right;  // 选角界面朝向右的向日葵背景图片
+IMAGE img_gloomshroom_selector_background_left; // 选角界面朝向左的忧郁菇背景图片
+IMAGE img_gloomshroom_selector_background_right;// 选角界面朝向右的忧郁菇背景图片
 
 IMAGE img_sky;                          // 天空图片
 IMAGE img_hills;                        // 山脉图片
@@ -81,6 +83,15 @@ Atlas atlas_sunflower_attack_ex_right; // 向日葵向右的特殊攻击动画�
 Atlas atlas_sunflower_die_left;        // 向日葵向左的死亡动画图集
 Atlas atlas_sunflower_die_right;       // 向日葵向右的死亡动画图集
 
+Atlas atlas_gloomshroom_idle_left;       // 忧郁菇向左的默认动画图集
+Atlas atlas_gloomshroom_idle_right;      // 忧郁菇向右的默认动画图集
+Atlas atlas_gloomshroom_run_left;        // 忧郁菇向左的奔跑动画图集
+Atlas atlas_gloomshroom_run_right;       // 忧郁菇向右的奔跑动画图集
+Atlas atlas_gloomshroom_attack_ex_left;  // 忧郁菇向左的特殊攻击动画图集
+Atlas atlas_gloomshroom_attack_ex_right; // 忧郁菇向右的特殊攻击动画图集
+Atlas atlas_gloomshroom_die_left;        // 忧郁菇向左的死亡动画图集
+Atlas atlas_gloomshroom_die_right;       // 忧郁菇向右的死亡动画图集
+
 IMAGE img_pea;              // 豌豆图片
 Atlas atlas_pea_break;      // 豌豆破碎动画图集
 Atlas atlas_sun;            // 阳光动画图集
@@ -88,6 +99,8 @@ Atlas atlas_sun_explode;    // 阳光爆炸动画图集
 Atlas atlas_sun_ex;         // 特殊阳光动画图集
 Atlas atlas_sun_ex_explode; // 特殊阳光爆炸动画图集
 Atlas atlas_sun_text;       // “日”字文本动画图集
+Atlas atlas_bubbles;        // 泡泡动画图集
+Atlas atlas_bubbles_ex;     // 特殊泡泡动画图集
 
 Atlas atlas_run_effect;  // 奔跑特效动画图集
 Atlas atlas_jump_effect; // 跳跃特效动画图集
@@ -97,8 +110,9 @@ IMAGE img_1P_winner;  // 1P获胜文本图片
 IMAGE img_2P_winner;  // 2P获胜文本图片
 IMAGE img_winner_bar; // 获胜玩家文本背景图片
 
-IMAGE img_avatar_peashooter; // 豌豆射手头像图片
-IMAGE img_avatar_sunflower;  // 向日葵头像图片
+IMAGE img_avatar_peashooter;    // 豌豆射手头像图片
+IMAGE img_avatar_sunflower;     // 向日葵头像图片
+IMAGE img_avatar_gloomshroom;   // 忧郁菇头像图片
 
 void load_game_resources() {
     loadimage(&img_menu_background, _T("resources/menu_background.png"));
@@ -124,6 +138,8 @@ void load_game_resources() {
     flip_image(&img_peashooter_selector_background_right, &img_peashooter_selector_background_left);
     loadimage(&img_sunflower_selector_background_right, _T("resources/sunflower_selector_background.png"));
     flip_image(&img_sunflower_selector_background_right, &img_sunflower_selector_background_left);
+    loadimage(&img_gloomshroom_selector_background_right, _T("resources/gloomshroom_selector_background.png"));
+    flip_image(&img_gloomshroom_selector_background_right, &img_gloomshroom_selector_background_left);
 
     loadimage(&img_sky, _T("resources/sky.png"));
     loadimage(&img_hills, _T("resources/hills.png"));
@@ -151,6 +167,15 @@ void load_game_resources() {
     atlas_sunflower_die_right.load_from_file(_T("resources/sunflower_die_%d.png"), 2);
     flip_atlas(atlas_sunflower_die_right, atlas_sunflower_die_left);
 
+    atlas_gloomshroom_idle_right.load_from_file(_T("resources/gloomshroom_idle_%d.png"), 4);
+    flip_atlas(atlas_gloomshroom_idle_right, atlas_gloomshroom_idle_left);
+    atlas_gloomshroom_run_right.load_from_file(_T("resources/gloomshroom_run_%d.png"), 3);
+    flip_atlas(atlas_gloomshroom_run_right, atlas_gloomshroom_run_left);
+    atlas_gloomshroom_attack_ex_right.load_from_file(_T("resources/gloomshroom_attack_ex_%d.png"), 7);
+    flip_atlas(atlas_gloomshroom_attack_ex_right, atlas_gloomshroom_attack_ex_left);
+    atlas_gloomshroom_die_right.load_from_file(_T("resources/gloomshroom_die_%d.png"), 3);
+    flip_atlas(atlas_gloomshroom_die_right, atlas_gloomshroom_die_left);
+
     loadimage(&img_pea, _T("resources/pea.png"));
     atlas_pea_break.load_from_file(_T("resources/pea_break_%d.png"), 3);
     atlas_sun.load_from_file(_T("resources/sun_%d.png"), 5);
@@ -158,6 +183,8 @@ void load_game_resources() {
     atlas_sun_ex.load_from_file(_T("resources/sun_ex_%d.png"), 5);
     atlas_sun_ex_explode.load_from_file(_T("resources/sun_ex_explode_%d.png"), 5);
     atlas_sun_text.load_from_file(_T("resources/sun_text_%d.png"), 6);
+    atlas_bubbles.load_from_file(_T("resources/bubbles_%d.png"), 7);
+    atlas_bubbles_ex.load_from_file(_T("resources/bubbles_ex_%d.png"), 7);
 
     atlas_run_effect.load_from_file(_T("resources/run_effect_%d.png"), 4);
     atlas_jump_effect.load_from_file(_T("resources/jump_effect_%d.png"), 5);
@@ -169,6 +196,7 @@ void load_game_resources() {
 
     loadimage(&img_avatar_peashooter, _T("resources/avatar_peashooter.png"));
     loadimage(&img_avatar_sunflower, _T("resources/avatar_sunflower.png"));
+    loadimage(&img_avatar_gloomshroom, _T("resources/avatar_gloomshroom.png"));
 
     mciSendString(_T("open resources/bgm_game.mp3 alias bgm_game"), nullptr, 0, nullptr);
     mciSendString(_T("open resources/bgm_menu.mp3 alias bgm_menu"), nullptr, 0, nullptr);
@@ -181,6 +209,8 @@ void load_game_resources() {
     mciSendString(_T("open resources/sun_explode.mp3 alias sun_explode"), nullptr, 0, nullptr);
     mciSendString(_T("open resources/sun_explode_ex.mp3 alias sun_explode_ex"), nullptr, 0, nullptr);
     mciSendString(_T("open resources/sun_text.mp3 alias sun_text"), nullptr, 0, nullptr);
+    mciSendString(_T("open resources/bubbles_shot.mp3 alias bubbles_shot"), nullptr, 0, nullptr);
+    mciSendString(_T("open resources/bubbles_shot_ex.mp3 alias bubbles_shot_ex"), nullptr, 0, nullptr);
     mciSendString(_T("open resources/ui_confirm.wav alias ui_confirm"), nullptr, 0, nullptr);
     mciSendString(_T("open resources/ui_switch.wav alias ui_switch"), nullptr, 0, nullptr);
     mciSendString(_T("open resources/ui_win.wav alias ui_win"), nullptr, 0, nullptr);

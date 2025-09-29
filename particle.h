@@ -52,7 +52,7 @@ private:
     int lifespan = 0;       // 单帧粒子动画持续时长
     int idx_frame = 0;      // 当前正在播放的动画帧
     Vector2 position;       // 粒子的世界位置坐标
-    bool valid = true;      // 离子对意向是否有效
+    bool valid = true;      // 粒子动画是否有效
     Atlas* atlas = nullptr; // 粒子动画所使用图集
 };
 

@@ -5,6 +5,7 @@
 #include "animation.h"
 #include "player_id.h"
 #include "global_variable.h"
+#include "gloomshroom_player.h"
 #include "sunflower_player.h"
 #include "peashooter_player.h"
 
@@ -17,8 +18,10 @@ public:
     void on_enter() override {
         animation_peashooter.set_atlas(&atlas_peashooter_idle_right);
         animation_sunflower.set_atlas(&atlas_sunflower_idle_right);
+        animation_gloomshroom.set_atlas(&atlas_gloomshroom_idle_right);
         animation_peashooter.set_interval(100);
         animation_sunflower.set_interval(100);
+        animation_gloomshroom.set_interval(100);
 
         static const int OFFSET_X = 50;
 
@@ -59,6 +62,7 @@ public:
     void on_update(int delta) override {
         animation_peashooter.on_update(delta);
         animation_sunflower.on_update(delta);
+        animation_gloomshroom.on_update(delta);
 
         // 背景板滚动扫描线每帧向右移动5个像素, 如果扫描线的位置大于等于选择背景图片的宽度, 让扫描线返回起点
         selector_background_scroll_offset_x += 5;
@@ -77,6 +81,9 @@ public:
             case PlayerType::Sunflower:
                 img_p1_selector_background = &img_sunflower_selector_background_right;
                 break;
+            case PlayerType::Gloomshroom:
+                img_p1_selector_background = &img_gloomshroom_selector_background_left;
+                break;
             default:
                 img_p1_selector_background = &img_peashooter_selector_background_right;
                 break;
@@ -88,6 +95,9 @@ public:
                 break;
             case PlayerType::Sunflower:
                 img_p2_selector_background = &img_sunflower_selector_background_left;
+                break;
+            case PlayerType::Gloomshroom:
+                img_p2_selector_background = &img_gloomshroom_selector_background_left;
                 break;
             default:
                 img_p2_selector_background = &img_peashooter_selector_background_left;
@@ -127,6 +137,12 @@ public:
                     textwidth(str_sunflower_name)) / 2;
                 outtextxy_shaded(pos_img_1P_name.x, pos_img_1P_name.y, str_sunflower_name);
                 break;
+            case PlayerType::Gloomshroom:
+                animation_gloomshroom.on_draw(camera, pos_animation_1P.x, pos_animation_1P.y);
+                pos_img_1P_name.x = pos_img_1P_gravestone.x + (img_gravestone_right.getwidth() -
+                    textwidth(str_gloomshroom_name)) / 2;
+                outtextxy_shaded(pos_img_1P_name.x, pos_img_1P_name.y, str_gloomshroom_name);
+                break;
             default: break;
         }
 
@@ -142,6 +158,12 @@ public:
                 pos_img_2P_name.x = pos_img_2P_gravestone.x + (img_gravestone_right.getwidth() -
                     textwidth(str_sunflower_name)) / 2;
                 outtextxy_shaded(pos_img_2P_name.x, pos_img_2P_name.y, str_sunflower_name);
+                break;
+            case PlayerType::Gloomshroom:
+                animation_gloomshroom.on_draw(camera, pos_animation_2P.x, pos_animation_2P.y);
+                pos_img_2P_name.x = pos_img_2P_gravestone.x + (img_gravestone_right.getwidth() -
+                    textwidth(str_gloomshroom_name)) / 2;
+                outtextxy_shaded(pos_img_2P_name.x, pos_img_2P_name.y, str_gloomshroom_name);
                 break;
             default: break;
         }
@@ -226,6 +248,10 @@ public:
                 player_1 = new SunflowerPlayer();
                 img_player_1_avatar = &img_avatar_sunflower;
                 break;
+            case PlayerType::Gloomshroom:
+                player_1 = new GloomshroomPlayer();
+                img_player_1_avatar = &img_avatar_gloomshroom;
+                break;
             default: break;
         }
         player_1->set_id(PlayerID::P1);
@@ -238,6 +264,10 @@ public:
             case PlayerType::Sunflower:
                 player_2 = new SunflowerPlayer(false);
                 img_player_2_avatar = &img_avatar_sunflower;
+                break;
+            case PlayerType::Gloomshroom:
+                player_2 = new GloomshroomPlayer();
+                img_player_2_avatar = &img_avatar_gloomshroom;
                 break;
             default: break;
         }
@@ -258,6 +288,7 @@ private:
     enum class PlayerType {
         Peashooter = 0,
         Sunflower,
+        Gloomshroom,
         Invalid
     };
 
@@ -281,12 +312,14 @@ private:
 
     Animation animation_peashooter;         // 豌豆射手动画
     Animation animation_sunflower;          // 向日葵动画
+    Animation animation_gloomshroom;        // 忧郁菇动画
 
     PlayerType player_type_1 = PlayerType::Peashooter;  // 1P 角色类型
     PlayerType player_type_2 = PlayerType::Sunflower;   // 2P 角色类型
 
     LPCTSTR str_peashooter_name = _T("豌豆射手");   // 豌豆射手角色名
     LPCTSTR str_sunflower_name = _T("向日葵");     // 向日葵角色名
+    LPCTSTR str_gloomshroom_name = _T("忧郁菇");   // 向日葵角色名
 
     int selector_background_scroll_offset_x = 0;    // 背景板滚动距离
 

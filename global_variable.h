@@ -52,6 +52,8 @@ extern IMAGE img_peashooter_selector_background_left;  // 选角界面朝向左�
 extern IMAGE img_peashooter_selector_background_right; // 选角界面朝向右的豌豆射手背景图片
 extern IMAGE img_sunflower_selector_background_left;   // 选角界面朝向左的向日葵背景图片
 extern IMAGE img_sunflower_selector_background_right;  // 选角界面朝向右的向日葵背景图片
+extern IMAGE img_gloomshroom_selector_background_left; // 选角界面朝向左的忧郁菇背景图片
+extern IMAGE img_gloomshroom_selector_background_right;// 选角界面朝向右的忧郁菇背景图片
 
 extern IMAGE img_sky;                          // 天空图片
 extern IMAGE img_hills;                        // 山脉图片
@@ -79,6 +81,15 @@ extern Atlas atlas_sunflower_attack_ex_right; // 向日葵向右的特殊攻击�
 extern Atlas atlas_sunflower_die_left;        // 向日葵向左的死亡动画图集
 extern Atlas atlas_sunflower_die_right;       // 向日葵向右的死亡动画图集
 
+extern Atlas atlas_gloomshroom_idle_left;       // 忧郁菇向左的默认动画图集
+extern Atlas atlas_gloomshroom_idle_right;      // 忧郁菇向右的默认动画图集
+extern Atlas atlas_gloomshroom_run_left;        // 忧郁菇向左的奔跑动画图集
+extern Atlas atlas_gloomshroom_run_right;       // 忧郁菇向右的奔跑动画图集
+extern Atlas atlas_gloomshroom_attack_ex_left;  // 忧郁菇向左的特殊攻击动画图集
+extern Atlas atlas_gloomshroom_attack_ex_right; // 忧郁菇向右的特殊攻击动画图集
+extern Atlas atlas_gloomshroom_die_left;        // 忧郁菇向左的死亡动画图集
+extern Atlas atlas_gloomshroom_die_right;       // 忧郁菇向右的死亡动画图集
+
 extern IMAGE img_pea;              // 豌豆图片
 extern Atlas atlas_pea_break;      // 豌豆破碎动画图集
 extern Atlas atlas_sun;            // 阳光动画图集
@@ -86,6 +97,8 @@ extern Atlas atlas_sun_explode;    // 阳光爆炸动画图集
 extern Atlas atlas_sun_ex;         // 特殊阳光动画图集
 extern Atlas atlas_sun_ex_explode; // 特殊阳光爆炸动画图集
 extern Atlas atlas_sun_text;       // “日”字文本动画图集
+extern Atlas atlas_bubbles;        // 泡泡动画图集
+extern Atlas atlas_bubbles_ex;     // 特殊泡泡动画图集
 
 extern Atlas atlas_run_effect;  // 奔跑特效动画图集
 extern Atlas atlas_jump_effect; // 跳跃特效动画图集
@@ -97,5 +110,6 @@ extern IMAGE img_winner_bar; // 获胜玩家文本背景图片
 
 extern IMAGE img_avatar_peashooter; // 豌豆射手头像图片
 extern IMAGE img_avatar_sunflower;  // 向日葵头像图片
+extern IMAGE img_avatar_gloomshroom;   // 忧郁菇头像图片
 
 #endif //PLANTSVSPLANTS_GLOBAL_VARIABLE_H
